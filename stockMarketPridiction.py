@@ -11,6 +11,14 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import matplotlib.pyplot as plt
 
 st.set_page_config(layout="wide")
+st.markdown("""
+<style>
+body {
+    color: #fff;
+    background-color: #111;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # Function to calculate technical indicators
 def calculate_indicators(df):
@@ -87,74 +95,72 @@ if uploaded_file is not None:
     # Make forecast
     forecast_model, forecast = make_forecast(df)
 
-    # Layout
     col1, col2 = st.columns(2)
 
-with col1:
-    st.subheader("Data Preview")
-    st.write(df.head())
+    with col1:
+        st.subheader("Data Preview")
+        st.write(df.head())
 
-    st.subheader("Model Evaluation")
-    accuracy = accuracy_score(y_test, y_pred)
-    precision = precision_score(y_test, y_pred)
-    recall = recall_score(y_test, y_pred)
-    f1_score = f1_score(y_test, y_pred)
-    col_evaluation = st.columns(4)
-    with col_evaluation[0]:
-        st.metric("Accuracy", f"{accuracy:.2f}")
-    with col_evaluation[1]:
-        st.metric("Precision", f"{precision:.2f}")
-    with col_evaluation[2]:
-        st.metric("Recall", f"{recall:.2f}")
-    with col_evaluation[3]:
-        st.metric("F1 Score", f"{f1_score:.2f}")
+        st.subheader("Model Evaluation")
+        accuracy = accuracy_score(y_test, y_pred)
+        precision = precision_score(y_test, y_pred)
+        recall = recall_score(y_test, y_pred)
+        f1 = f1_score(y_test, y_pred)
+        col_evaluation = st.columns(4)
+        with col_evaluation[0]:
+            st.metric("Accuracy", f"{accuracy:.2f}")
+        with col_evaluation[1]:
+            st.metric("Precision", f"{precision:.2f}")
+        with col_evaluation[2]:
+            st.metric("Recall", f"{recall:.2f}")
+        with col_evaluation[3]:
+            st.metric("F1 Score", f"{f1:.2f}")
 
-    st.subheader("Prediction")
-    st.write(f"Prediction: {prediction}")
+        st.subheader("Prediction")
+        st.write(f"Prediction: {prediction}")
 
-with col2:
-    st.subheader("Close Price Chart")
-    fig = plt.figure(figsize=(10, 6))
-    plt.style.use('dark_background')
-    plt.plot(df["date"], df["close"], color='yellow')
-    plt.xlabel("Date", color='white')
-    plt.ylabel("Close Price", color='white')
-    plt.title("Close Price Chart", color='white')
-    plt.tick_params(axis='x', colors='white')
-    plt.tick_params(axis='y', colors='white')
-    st.pyplot(fig)
+    with col2:
+        st.subheader("Close Price Chart")
+        fig = plt.figure(figsize=(10, 6))
+        plt.style.use('dark_background')
+        plt.plot(df["date"], df["close"], color='yellow')
+        plt.xlabel("Date", color='white')
+        plt.ylabel("Close Price", color='white')
+        plt.title("Close Price Chart", color='white')
+        plt.tick_params(axis='x', colors='white')
+        plt.tick_params(axis='y', colors='white')
+        st.pyplot(fig)
 
-    st.subheader("Forecast")
-    fig = plot_plotly(forecast_model, forecast)
-    fig.update_layout(template='plotly_dark')
-    st.plotly_chart(fig, use_container_width=True)
+        st.subheader("Forecast")
+        fig = plot_plotly(forecast_model, forecast)
+        fig.update_layout(template='plotly_dark')
+        st.plotly_chart(fig, use_container_width=True)
 
-st.subheader("Technical Indicators")
-col3, col4 = st.columns(2)
-with col3:
-    fig = plt.figure(figsize=(10, 6))
-    plt.style.use('dark_background')
-    plt.plot(df["date"], df["sma_20"], label="SMA 20", color='blue')
-    plt.plot(df["date"], df["sma_50"], label="SMA 50", color='red')
-    plt.xlabel("Date", color='white')
-    plt.ylabel("SMA", color='white')
-    plt.title("SMA Chart", color='white')
-    plt.tick_params(axis='x', colors='white')
-    plt.tick_params(axis='y', colors='white')
-    plt.legend()
-    st.pyplot(fig)
+    st.subheader("Technical Indicators")
+    col3, col4 = st.columns(2)
+    with col3:
+        fig = plt.figure(figsize=(10, 6))
+        plt.style.use('dark_background')
+        plt.plot(df["date"], df["sma_20"], label="SMA 20", color='blue')
+        plt.plot(df["date"], df["sma_50"], label="SMA 50", color='red')
+        plt.xlabel("Date", color='white')
+        plt.ylabel("SMA", color='white')
+        plt.title("SMA Chart", color='white')
+        plt.tick_params(axis='x', colors='white')
+        plt.tick_params(axis='y', colors='white')
+        plt.legend()
+        st.pyplot(fig)
 
-with col4:
-    fig = plt.figure(figsize=(10, 6))
-    plt.style.use('dark_background')
-    plt.plot(df["date"], df["rsi_14"], label="RSI 14", color='green')
-    plt.axhline(y=30, color='r', linestyle='--')
-    plt.axhline(y=70, color='g', linestyle='--')
-    plt.xlabel("Date", color='white')
-    plt.ylabel("RSI", color='white')
-    plt.title("RSI Chart", color='white')
-    plt.tick_params(axis='x', colors='white')
-    plt.tick_params(axis='y', colors='white')
-    plt.legend()
-    st.pyplot(fig)
-
+    with col4:
+        fig = plt.figure(figsize=(10, 6))
+        plt.style.use('dark_background')
+        plt.plot(df["date"], df["rsi_14"], label="RSI 14", color='green')
+        plt.axhline(y=30, color='r', linestyle='--')
+        plt.axhline(y=70, color='g', linestyle='--')
+        plt.xlabel("Date", color='white')
+        plt.ylabel("RSI", color='white')
+        plt.title("RSI Chart", color='white')
+        plt.tick_params(axis='x', colors='white')
+        plt.tick_params(axis='y', colors='white')
+        plt.legend()
+        st.pyplot(fig)
