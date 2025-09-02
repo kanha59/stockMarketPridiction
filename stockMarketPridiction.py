@@ -64,8 +64,13 @@ if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
     df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
     df["date"] = pd.to_datetime(df["date"])
+    
+    # Remove commas from numeric columns
+    numeric_cols = ["open", "high", "low", "close", "volume", "value", "no_of_trades"]
+    for col in numeric_cols:
+        df[col] = df[col].astype(str).str.replace(",", "").astype(float)
+    
     df = df.sort_values("date").reset_index(drop=True)
-
     # Calculate technical indicators
     df = calculate_indicators(df)
 
@@ -132,4 +137,5 @@ if uploaded_file is not None:
         plt.ylabel("RSI")
         plt.title("RSI Chart")
         plt.legend()
+
         st.pyplot(fig)
