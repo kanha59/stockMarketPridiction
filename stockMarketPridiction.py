@@ -95,6 +95,10 @@ with col1:
     st.write(df.head())
 
     st.subheader("Model Evaluation")
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
+    f1_score = f1_score(y_test, y_pred)
     col_evaluation = st.columns(4)
     with col_evaluation[0]:
         st.metric("Accuracy", f"{accuracy:.2f}")
@@ -153,3 +157,4 @@ with col4:
     plt.tick_params(axis='y', colors='white')
     plt.legend()
     st.pyplot(fig)
+
