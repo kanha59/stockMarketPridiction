@@ -10,6 +10,16 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
 import matplotlib.pyplot as plt
 
+st.set_page_config(layout="wide")
+st.markdown("""
+<style>
+body {
+    color: #fff;
+    background-color: #111;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # Function to calculate technical indicators
 def calculate_indicators(df):
     df["sma_20"] = df["close"].rolling(window=20).mean()
@@ -55,7 +65,6 @@ def make_forecast(df):
     forecast = model.predict(future)
     return model, forecast
 
-
 # Streamlit app
 st.title("Stock Price Analysis and Prediction")
 
@@ -69,9 +78,11 @@ if uploaded_file is not None:
     # Remove commas from numeric columns
     numeric_cols = ["open", "high", "low", "close", "volume", "value", "no_of_trades"]
     for col in numeric_cols:
-        df[col] = df[col].astype(str).str.replace(",", "").astype(float)
+        if col in df.columns:
+            df[col] = df[col].astype(str).str.replace(",", "").astype(float)
     
     df = df.sort_values("date").reset_index(drop=True)
+
     # Calculate technical indicators
     df = calculate_indicators(df)
 
@@ -82,11 +93,8 @@ if uploaded_file is not None:
     prediction = make_prediction(model, df)
 
     # Make forecast
-    model, forecast = make_forecast(df)
+    forecast_model, forecast = make_forecast(df)
 
-
-
-    # Layout
     col1, col2 = st.columns(2)
 
     with col1:
@@ -97,11 +105,16 @@ if uploaded_file is not None:
         accuracy = accuracy_score(y_test, y_pred)
         precision = precision_score(y_test, y_pred)
         recall = recall_score(y_test, y_pred)
-        f1_score = f1_score(y_test, y_pred)
-        st.write(f"Accuracy: {accuracy:.2f}")
-        st.write(f"Precision: {precision:.2f}")
-        st.write(f"Recall: {recall:.2f}")
-        st.write(f"F1 Score: {f1_score:.2f}")
+        f1 = f1_score(y_test, y_pred)
+        col_evaluation = st.columns(4)
+        with col_evaluation[0]:
+            st.metric("Accuracy", f"{accuracy:.2f}")
+        with col_evaluation[1]:
+            st.metric("Precision", f"{precision:.2f}")
+        with col_evaluation[2]:
+            st.metric("Recall", f"{recall:.2f}")
+        with col_evaluation[3]:
+            st.metric("F1 Score", f"{f1:.2f}")
 
         st.subheader("Prediction")
         st.write(f"Prediction: {prediction}")
@@ -109,38 +122,45 @@ if uploaded_file is not None:
     with col2:
         st.subheader("Close Price Chart")
         fig = plt.figure(figsize=(10, 6))
-        plt.plot(df["date"], df["close"])
-        plt.xlabel("Date")
-        plt.ylabel("Close Price")
-        plt.title("Close Price Chart")
+        plt.style.use('dark_background')
+        plt.plot(df["date"], df["close"], color='yellow')
+        plt.xlabel("Date", color='white')
+        plt.ylabel("Close Price", color='white')
+        plt.title("Close Price Chart", color='white')
+        plt.tick_params(axis='x', colors='white')
+        plt.tick_params(axis='y', colors='white')
         st.pyplot(fig)
 
         st.subheader("Forecast")
-        fig = plot_plotly(model, forecast)
-        st.plotly_chart(fig)
+        fig = plot_plotly(forecast_model, forecast)
+        fig.update_layout(template='plotly_dark')
+        st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Technical Indicators")
     col3, col4 = st.columns(2)
     with col3:
         fig = plt.figure(figsize=(10, 6))
-        plt.plot(df["date"], df["sma_20"], label="SMA 20")
-        plt.plot(df["date"], df["sma_50"], label="SMA 50")
-        plt.xlabel("Date")
-        plt.ylabel("SMA")
-        plt.title("SMA Chart")
+        plt.style.use('dark_background')
+        plt.plot(df["date"], df["sma_20"], label="SMA 20", color='blue')
+        plt.plot(df["date"], df["sma_50"], label="SMA 50", color='red')
+        plt.xlabel("Date", color='white')
+        plt.ylabel("SMA", color='white')
+        plt.title("SMA Chart", color='white')
+        plt.tick_params(axis='x', colors='white')
+        plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
 
     with col4:
         fig = plt.figure(figsize=(10, 6))
-        plt.plot(df["date"], df["rsi_14"], label="RSI 14")
+        plt.style.use('dark_background')
+        plt.plot(df["date"], df["rsi_14"], label="RSI 14", color='green')
         plt.axhline(y=30, color='r', linestyle='--')
         plt.axhline(y=70, color='g', linestyle='--')
-        plt.xlabel("Date")
-        plt.ylabel("RSI")
-        plt.title("RSI Chart")
+        plt.xlabel("Date", color='white')
+        plt.ylabel("RSI", color='white')
+        plt.title("RSI Chart", color='white')
+        plt.tick_params(axis='x', colors='white')
+        plt.tick_params(axis='y', colors='white')
         plt.legend()
-
         st.pyplot(fig)
-
-
