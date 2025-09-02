@@ -53,7 +53,8 @@ def make_forecast(df):
     model.fit(prophet_df)
     future = model.make_future_dataframe(periods=30)
     forecast = model.predict(future)
-    return forecast
+    return model, forecast
+
 
 # Streamlit app
 st.title("Stock Price Analysis and Prediction")
@@ -81,7 +82,9 @@ if uploaded_file is not None:
     prediction = make_prediction(model, df)
 
     # Make forecast
-    forecast = make_forecast(df)
+    model, forecast = make_forecast(df)
+
+
 
     # Layout
     col1, col2 = st.columns(2)
@@ -113,7 +116,7 @@ if uploaded_file is not None:
         st.pyplot(fig)
 
         st.subheader("Forecast")
-        fig = plot_plotly(Prophet(daily_seasonality=True).fit(df[["date", "close"]].rename(columns={"date": "ds", "close": "y"})).make_future_dataframe(periods=30))
+        fig = plot_plotly(model, forecast)
         st.plotly_chart(fig)
 
     st.subheader("Technical Indicators")
@@ -139,3 +142,4 @@ if uploaded_file is not None:
         plt.legend()
 
         st.pyplot(fig)
+
