@@ -15,56 +15,56 @@ st.set_page_config(layout="wide")
 st.markdown("""
 <style>
 body {
-color: #fff;
-background-color: #111;
+    color: #fff;
+    background-color: #111;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # Function to calculate technical indicators
 def calculate_indicators(df):
-df["sma_20"] = df["close"].rolling(window=20).mean()
-df["sma_50"] = df["close"].rolling(window=50).mean()
-df["rsi_14"] = ta.momentum.RSIIndicator(df["close"], window=14).rsi()
-macd = ta.trend.MACD(df["close"], window_slow=26, window_fast=12, window_sign=9)
-df["macd"] = macd.macd()
-df["macd_signal"] = macd.macd_signal()
-df["macd_hist"] = macd.macd_diff()
-df["returns"] = df["close"].pct_change()
-df["volatility_5"] = df["returns"].rolling(window=5).std()
-df["roc_5"] = df["close"].pct_change(periods=5)
-df["relative_strength"] = df["close"] / df["close"].rolling(window=5).mean()
-return df
+    df["sma_20"] = df["close"].rolling(window=20).mean()
+    df["sma_50"] = df["close"].rolling(window=50).mean()
+    df["rsi_14"] = ta.momentum.RSIIndicator(df["close"], window=14).rsi()
+    macd = ta.trend.MACD(df["close"], window_slow=26, window_fast=12, window_sign=9)
+    df["macd"] = macd.macd()
+    df["macd_signal"] = macd.macd_signal()
+    df["macd_hist"] = macd.macd_diff()
+    df["returns"] = df["close"].pct_change()
+    df["volatility_5"] = df["returns"].rolling(window=5).std()
+    df["roc_5"] = df["close"].pct_change(periods=5)
+    df["relative_strength"] = df["close"] / df["close"].rolling(window=5).mean()
+    return df
 
 # Function to train model
 def train_model(df):
-features = ["open", "high", "low", "close", "volume", "sma_20", "sma_50", "rsi_14", "macd", "macd_signal", "macd_hist"]
-df["target_price"] = df["close"].shift(-1)
-df["trend"] = (df["target_price"] > df["close"]).astype(int)
-df.dropna(inplace=True)
-X = df[features]
-y = df["trend"]
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
-model = RandomForestClassifier(n_estimators=100, random_state=42)
-model.fit(X_train, y_train)
-y_pred = model.predict(X_test)
-return model, X_test, y_test, y_pred
+    features = ["open", "high", "low", "close", "volume", "sma_20", "sma_50", "rsi_14", "macd", "macd_signal", "macd_hist"]
+    df["target_price"] = df["close"].shift(-1)
+    df["trend"] = (df["target_price"] > df["close"]).astype(int)
+    df.dropna(inplace=True)
+    X = df[features]
+    y = df["trend"]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, shuffle=False)
+    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    return model, X_test, y_test, y_pred
 
 # Function to make prediction
 def make_prediction(model, df):
-features = ["open", "high", "low", "close", "volume", "sma_20", "sma_50", "rsi_14", "macd", "macd_signal", "macd_hist"]
-last_row = df[features].iloc[[-1]]
-pred = model.predict(last_row)[0]
-return "Up" if pred == 1 else "Down"
+    features = ["open", "high", "low", "close", "volume", "sma_20", "sma_50", "rsi_14", "macd", "macd_signal", "macd_hist"]
+    last_row = df[features].iloc[[-1]]
+    pred = model.predict(last_row)[0]
+    return "Up" if pred == 1 else "Down"
 
 # Function to make forecast
 def make_forecast(df):
-prophet_df = df[["date", "close"]].rename(columns={"date": "ds", "close": "y"})
-model = Prophet(daily_seasonality=True)
-model.fit(prophet_df)
-future = model.make_future_dataframe(periods=30)
-forecast = model.predict(future)
-return model, forecast
+    prophet_df = df[["date", "close"]].rename(columns={"date": "ds", "close": "y"})
+    model = Prophet(daily_seasonality=True)
+    model.fit(prophet_df)
+    future = model.make_future_dataframe(periods=30)
+    forecast = model.predict(future)
+    return model, forecast
 
 # Streamlit app
 st.title("Stock Price Analysis and Prediction")
@@ -178,4 +178,5 @@ if uploaded_file is not None:
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
 
