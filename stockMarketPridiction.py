@@ -7,8 +7,9 @@ from prophet.plot import plot_plotly
 import plotly.offline as pyo
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report, confusion_matrix
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 st.set_page_config(layout="wide")
 st.markdown("""
@@ -95,7 +96,7 @@ if uploaded_file is not None:
     # Make forecast
     forecast_model, forecast = make_forecast(df)
 
-    #col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2)
     with col1:
         st.subheader("Data Preview")
         st.write(df.head())
@@ -107,14 +108,14 @@ if uploaded_file is not None:
         f1 = f1_score(y_test, y_pred)
         
         st.write("Model Evaluation Metrics:")
-        col1, col2, col3, col4 = st.columns(4)
-        with col1:
+        col21, col22, col23, col24 = st.columns(4)
+        with col21:
             st.metric("Accuracy", f"{accuracy:.2f}")
-        with col2:
+        with col22:
             st.metric("Precision", f"{precision:.2f}")
-        with col3:
+        with col23:
             st.metric("Recall", f"{recall:.2f}")
-        with col4:
+        with col24:
             st.metric("F1 Score", f"{f1:.2f}")
         
         st.write("Classification Report:")
@@ -138,6 +139,7 @@ if uploaded_file is not None:
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
 
+    col3, col4 = st.columns(2)
     with col3:
         st.subheader("Close Price Chart")
         fig = plt.figure(figsize=(10, 6))
@@ -155,9 +157,8 @@ if uploaded_file is not None:
         fig.update_layout(template='plotly_dark')
         st.plotly_chart(fig, use_container_width=True)
 
-    st.subheader("Technical Indicators")
-    #col3, col4 = st.columns(2)
     with col4:
+        st.subheader("Technical Indicators")
         fig = plt.figure(figsize=(10, 6))
         plt.style.use('dark_background')
         plt.plot(df["date"], df["sma_20"], label="SMA 20", color='blue')
@@ -170,7 +171,6 @@ if uploaded_file is not None:
         plt.legend()
         st.pyplot(fig)
 
-    with col5:
         fig = plt.figure(figsize=(10, 6))
         plt.style.use('dark_background')
         plt.plot(df["date"], df["rsi_14"], label="RSI 14", color='green')
@@ -183,4 +183,3 @@ if uploaded_file is not None:
         plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
-
