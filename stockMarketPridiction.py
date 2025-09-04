@@ -203,7 +203,7 @@ if uploaded_file is not None:
         fig.update_layout(template='plotly_dark')
         st.plotly_chart(fig)
 
-col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2)
     with col1:
         # Accuracy, Precision, Recall, F1
         accuracy = accuracy_score(y_test, y_pred)
@@ -243,6 +243,3 @@ col1, col2 = st.columns(2)
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
-
-
-
