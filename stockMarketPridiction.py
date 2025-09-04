@@ -128,12 +128,12 @@ if uploaded_file is not None:
         with col23:
             st.metric("Recall", f"{recall:.2f}")
         with col24:
-        st.metric("F1 Score", f"{f1:.2f}")
-        
-        st.write("Classification Report:")
-        st.code(classification_report(y_test, y_pred))
+            st.metric("F1 Score", f"{f1:.2f}")
+            st.write("Classification Report:")
+            st.code(classification_report(y_test, y_pred))
     with col2:
-         # Compute confusion matrix
+        
+        # Compute confusion matrix
         cm = confusion_matrix(y_test, y_pred)
         group_names = ["True Neg (TN)", "False Pos (FP)", 
                        "False Neg (FN)", "True Pos (TP)"]
@@ -151,7 +151,6 @@ if uploaded_file is not None:
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
 
-
     st.subheader("Close Price Chart")
     fig = plt.figure(figsize=(8, 6))
     plt.style.use('dark_background')
@@ -162,9 +161,6 @@ if uploaded_file is not None:
     plt.tick_params(axis='x', colors='white')
     plt.tick_params(axis='y', colors='white')
     st.pyplot(fig)
-
-   
-        
 
     # Display technical indicator charts
     st.subheader("Technical Indicators")
@@ -243,6 +239,7 @@ if uploaded_file is not None:
        
         
        
+
 
 
 
