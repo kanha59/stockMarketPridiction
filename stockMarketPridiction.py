@@ -120,14 +120,15 @@ if uploaded_file is not None:
         f1 = f1_score(y_test, y_pred)
         
         st.write("Model Evaluation Metrics:")
-        col21, col22, col23 = st.columns(4)
+        col21, col22, col23, col24 = st.columns(4)
         with col21:
             st.metric("Accuracy", f"{accuracy:.2f}")
         with col22:
             st.metric("Precision", f"{precision:.2f}")
         with col23:
             st.metric("Recall", f"{recall:.2f}")
-        st.metric("F1 Score", f"{f1:.2f}")
+        with col24:
+            st.metric("F1 Score", f"{f1:.2f}")
         st.write("Classification Report:")
         st.code(classification_report(y_test, y_pred))
             
@@ -152,7 +153,7 @@ if uploaded_file is not None:
         st.pyplot(fig)
 
     st.subheader("Close Price Chart")
-    fig = plt.figure(figsize=(8, 6))
+    fig = plt.figure(figsize=(12, 6))
     plt.style.use('dark_background')
     plt.plot(df["date"], df["close"], color='yellow')
     plt.xlabel("Date", color='white')
@@ -222,7 +223,7 @@ if uploaded_file is not None:
         plt.legend()
         st.pyplot(fig)
 
-    col1 = st.columns(2)
+    col1, col2 = st.columns(2)
     with col1:
         st.subheader("Pct Change Chart")
         fig = plt.figure(figsize=(8, 6))
@@ -235,4 +236,8 @@ if uploaded_file is not None:
         plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
-
+    with col2:
+        st.subheader("Forecast")
+        fig = plot_plotly(forecast_model, forecast)
+        fig.update_layout(template='plotly_dark')
+        st.plotly_chart(fig)
