@@ -184,7 +184,7 @@ if uploaded_file is not None:
         plt.legend()
         st.pyplot(fig)
 
-    col1 = st.columns(2)
+    col1, col2 = st.columns(2)
     with col1:
         st.subheader("Pct Change Chart")
         fig = plt.figure(figsize=(20, 6))
@@ -197,10 +197,11 @@ if uploaded_file is not None:
         plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
-    st.subheader("Forecast")
-    fig = plot_plotly(forecast_model, forecast)
-    fig.update_layout(template='plotly_dark')
-    st.plotly_chart(fig)
+    with col2:  
+        st.subheader("Forecast")
+        fig = plot_plotly(forecast_model, forecast)
+        fig.update_layout(template='plotly_dark')
+        st.plotly_chart(fig)
         
 
     col1, col2 = st.columns(2)
@@ -243,4 +244,5 @@ if uploaded_file is not None:
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
 
