@@ -129,7 +129,7 @@ if uploaded_file is not None:
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("SMA Chart")
-        fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure(figsize=(20, 6))
         plt.style.use('dark_background')
         plt.plot(df["date"], df["sma_20"], label="SMA 20", color='blue')
         plt.plot(df["date"], df["sma_50"], label="SMA 50", color='red')
@@ -143,7 +143,7 @@ if uploaded_file is not None:
         st.pyplot(fig)
     with col2:
         st.subheader("RSI Chart")
-        fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure(figsize=(20, 6))
         plt.style.use('dark_background')
         plt.plot(df["date"], df["rsi_14"], label="RSI 14", color='green')
         plt.axhline(y=30, color='r', linestyle='--')
@@ -159,7 +159,7 @@ if uploaded_file is not None:
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("MACD Chart")
-        fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure(figsize=(20, 6))
         plt.style.use('dark_background')
         plt.plot(df["date"], df["macd"], label="MACD", color='blue')
         plt.plot(df["date"], df["macd_signal"], label="Signal", color='red')
@@ -173,7 +173,7 @@ if uploaded_file is not None:
         st.pyplot(fig)
     with col2:
         st.subheader("Volatility Chart")
-        fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure(figsize=(20, 6))
         plt.style.use('dark_background')
         plt.plot(df["date"], df["volatility_5"], label="Volatility", color='red')
         plt.xlabel("Date", color='white')
@@ -184,10 +184,10 @@ if uploaded_file is not None:
         plt.legend()
         st.pyplot(fig)
 
-    col1, col2 = st.columns(2)
+    col1 = st.columns(2)
     with col1:
         st.subheader("Pct Change Chart")
-        fig = plt.figure(figsize=(8, 6))
+        fig = plt.figure(figsize=(20, 6))
         plt.style.use('dark_background')
         plt.plot(df["date"], df["roc_5"], label="Pct Change", color='blue')
         plt.xlabel("Date", color='white')
@@ -197,11 +197,11 @@ if uploaded_file is not None:
         plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
-    with col2:
-        st.subheader("Forecast")
-        fig = plot_plotly(forecast_model, forecast)
-        fig.update_layout(template='plotly_dark')
-        st.plotly_chart(fig)
+    st.subheader("Forecast")
+    fig = plot_plotly(forecast_model, forecast)
+    fig.update_layout(template='plotly_dark')
+    st.plotly_chart(fig)
+        
 
     col1, col2 = st.columns(2)
     with col1:
@@ -237,9 +237,10 @@ if uploaded_file is not None:
         labels = np.array(labels).reshape(2, 2)
 
         # Plot heatmap
-        fig = plt.figure(figsize=(6, 5))
+        fig = plt.figure(figsize=(15, 5))
         sns.heatmap(cm, annot=labels, fmt="", cmap="Blues", cbar=False)
         plt.xlabel("Predicted Label")
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
