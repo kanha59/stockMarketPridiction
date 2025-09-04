@@ -120,17 +120,17 @@ if uploaded_file is not None:
         f1 = f1_score(y_test, y_pred)
         
         st.write("Model Evaluation Metrics:")
-        col21, col22, col23, col24 = st.columns(4)
+        col21, col22, col23 = st.columns(4)
         with col21:
             st.metric("Accuracy", f"{accuracy:.2f}")
         with col22:
             st.metric("Precision", f"{precision:.2f}")
         with col23:
             st.metric("Recall", f"{recall:.2f}")
-        with col24:
-            st.metric("F1 Score", f"{f1:.2f}")
-            st.write("Classification Report:")
-            st.code(classification_report(y_test, y_pred))
+        st.metric("F1 Score", f"{f1:.2f}")
+        st.write("Classification Report:")
+        st.code(classification_report(y_test, y_pred))
+            
     with col2:
         
         # Compute confusion matrix
@@ -235,3 +235,4 @@ if uploaded_file is not None:
         plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
+
