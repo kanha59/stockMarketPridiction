@@ -73,16 +73,30 @@ st.title("Stock Price Analysis and Prediction")
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
-    df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
-    df["date"] = pd.to_datetime(df["date"])
+
+     col1, col2 = st.columns(2)
+    with col1:
+        
+        st.subheader("Orignal Data Preview")
+        st.write(df.head())
+
+    with col2:
+        
+        df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
+        df["date"] = pd.to_datetime(df["date"])
     
-    # Remove commas from numeric columns
-    numeric_cols = ["open", "high", "low", "close", "volume", "value", "no_of_trades"]
-    for col in numeric_cols:
-        if col in df.columns:
-            df[col] = df[col].astype(str).str.replace(",", "").astype(float)
+        # Remove commas from numeric columns
+        numeric_cols = ["open", "high", "low", "close", "volume", "value", "no_of_trades"]
+        for col in numeric_cols:
+            if col in df.columns:
+                df[col] = df[col].astype(str).str.replace(",", "").astype(float)
+        
+        df = df.sort_values("date").reset_index(drop=True)
+        
+        st.subheader("Data Preview After Cleaning")
+        st.write(df.head())
+
     
-    df = df.sort_values("date").reset_index(drop=True)
 
     # Calculate technical indicators
     df = calculate_indicators(df)
@@ -96,21 +110,61 @@ if uploaded_file is not None:
     # Make forecast
     forecast_model, forecast = make_forecast(df)
 
+    
     col1, col2 = st.columns(2)
     with col1:
-        st.subheader("Data Preview")
-        st.write(df.head())
+        # Accuracy, Precision, Recall, F1
+        accuracy = accuracy_score(y_test, y_pred)
+        precision = precision_score(y_test, y_pred)
+        recall = recall_score(y_test, y_pred)
+        f1 = f1_score(y_test, y_pred)
+        
+        st.write("Model Evaluation Metrics:")
+        col21, col22, col23, col24 = st.columns(4)
+        with col21:
+            st.metric("Accuracy", f"{accuracy:.2f}")
+        with col22:
+            st.metric("Precision", f"{precision:.2f}")
+        with col23:
+            st.metric("Recall", f"{recall:.2f}")
+        with col24:
+        st.metric("F1 Score", f"{f1:.2f}")
+        
+        st.write("Classification Report:")
+        st.code(classification_report(y_test, y_pred))
     with col2:
-        st.subheader("Close Price Chart")
-        fig = plt.figure(figsize=(8, 6))
-        plt.style.use('dark_background')
-        plt.plot(df["date"], df["close"], color='yellow')
-        plt.xlabel("Date", color='white')
-        plt.ylabel("Close Price", color='white')
-        plt.title("Close Price Chart", color='white')
-        plt.tick_params(axis='x', colors='white')
-        plt.tick_params(axis='y', colors='white')
+         # Compute confusion matrix
+        cm = confusion_matrix(y_test, y_pred)
+        group_names = ["True Neg (TN)", "False Pos (FP)", 
+                       "False Neg (FN)", "True Pos (TP)"]
+        
+        group_counts = [f"{value}" for value in cm.flatten()]
+        labels = [f"{name}\n{count}" for name, count in zip(group_names, group_counts)]
+        
+        labels = np.array(labels).reshape(2, 2)
+
+        # Plot heatmap
+        fig = plt.figure(figsize=(6, 5))
+        sns.heatmap(cm, annot=labels, fmt="", cmap="Blues", cbar=False)
+        plt.xlabel("Predicted Label")
+        plt.ylabel("True Label")
+        plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
+
+    st.subheader("Close Price Chart")
+    fig = plt.figure(figsize=(8, 6))
+    plt.style.use('dark_background')
+    plt.plot(df["date"], df["close"], color='yellow')
+    plt.xlabel("Date", color='white')
+    plt.ylabel("Close Price", color='white')
+    plt.title("Close Price Chart", color='white')
+    plt.tick_params(axis='x', colors='white')
+    plt.tick_params(axis='y', colors='white')
+    st.pyplot(fig)
+
+   
+        
 
     # Display technical indicator charts
     st.subheader("Technical Indicators")
@@ -186,42 +240,8 @@ if uploaded_file is not None:
         plt.legend()
         st.pyplot(fig)
     with col2:
-        # Accuracy, Precision, Recall, F1
-        accuracy = accuracy_score(y_test, y_pred)
-        precision = precision_score(y_test, y_pred)
-        recall = recall_score(y_test, y_pred)
-        f1 = f1_score(y_test, y_pred)
+       
         
-        st.write("Model Evaluation Metrics:")
-        col21, col22, col23, col24 = st.columns(4)
-        with col21:
-            st.metric("Accuracy", f"{accuracy:.2f}")
-        with col22:
-            st.metric("Precision", f"{precision:.2f}")
-        with col23:
-            st.metric("Recall", f"{recall:.2f}")
-        with col24:
-            st.metric("F1 Score", f"{f1:.2f}")
-        
-        st.write("Classification Report:")
-        st.code(classification_report(y_test, y_pred))
-        
-        # Compute confusion matrix
-        cm = confusion_matrix(y_test, y_pred)
-        group_names = ["True Neg (TN)", "False Pos (FP)", 
-                       "False Neg (FN)", "True Pos (TP)"]
-        
-        group_counts = [f"{value}" for value in cm.flatten()]
-        labels = [f"{name}\n{count}" for name, count in zip(group_names, group_counts)]
-        
-        labels = np.array(labels).reshape(2, 2)
-
-        # Plot heatmap
-        fig = plt.figure(figsize=(6, 5))
-        sns.heatmap(cm, annot=labels, fmt="", cmap="Blues", cbar=False)
-        plt.xlabel("Predicted Label")
-        plt.ylabel("True Label")
-        plt.title("Confusion Matrix with TP / FP / FN / TN")
-        st.pyplot(fig)
+       
 
 
