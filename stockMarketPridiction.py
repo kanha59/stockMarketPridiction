@@ -72,9 +72,30 @@ st.title("Stock Price Analysis and Prediction")
 # Upload data
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 if uploaded_file is not None:
-    # ...
+    df = pd.read_csv(uploaded_file)
+    df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
+    df["date"] = pd.to_datetime(df["date"])
+    
+    # Remove commas from numeric columns
+    numeric_cols = ["open", "high", "low", "close", "volume", "value", "no_of_trades"]
+    for col in numeric_cols:
+        if col in df.columns:
+            df[col] = df[col].astype(str).str.replace(",", "").astype(float)
+    
+    df = df.sort_values("date").reset_index(drop=True)
 
-    # Display data preview and charts in two columns
+    # Calculate technical indicators
+    df = calculate_indicators(df)
+
+    # Train model
+    model, X_test, y_test, y_pred = train_model(df)
+
+    # Make prediction
+    prediction = make_prediction(model, df)
+
+    # Make forecast
+    forecast_model, forecast = make_forecast(df)
+
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Data Preview")
@@ -178,5 +199,3 @@ if uploaded_file is not None:
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
-
-
