@@ -222,7 +222,7 @@ if uploaded_file is not None:
         plt.legend()
         st.pyplot(fig)
 
-    col1, col2 = st.columns(2)
+    col1 = st.columns(2)
     with col1:
         st.subheader("Pct Change Chart")
         fig = plt.figure(figsize=(8, 6))
@@ -235,11 +235,3 @@ if uploaded_file is not None:
         plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
-    with col2:
-       
-        
-       
-
-
-
-
