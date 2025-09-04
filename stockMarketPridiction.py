@@ -153,7 +153,7 @@ if uploaded_file is not None:
         st.pyplot(fig)
 
     st.subheader("Close Price Chart")
-    fig = plt.figure(figsize=(8, 6))
+    fig = plt.figure(figsize=(20, 6))
     plt.style.use('dark_background')
     plt.plot(df["date"], df["close"], color='yellow')
     plt.xlabel("Date", color='white')
@@ -241,4 +241,5 @@ if uploaded_file is not None:
         fig = plot_plotly(forecast_model, forecast)
         fig.update_layout(template='plotly_dark')
         st.plotly_chart(fig)
+
 
