@@ -238,12 +238,13 @@ if uploaded_file is not None:
         labels = np.array(labels).reshape(2, 2)
 
         # Plot heatmap
-        fig = plt.figure(figsize=(15, 5))
+        fig = plt.figure(figsize=(8, 5))
         sns.heatmap(cm, annot=labels, fmt="", cmap="Blues", cbar=False)
         plt.xlabel("Predicted Label")
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
 
 
 
