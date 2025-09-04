@@ -111,46 +111,7 @@ if uploaded_file is not None:
     forecast_model, forecast = make_forecast(df)
 
     
-    col1, col2 = st.columns(2)
-    with col1:
-        # Accuracy, Precision, Recall, F1
-        accuracy = accuracy_score(y_test, y_pred)
-        precision = precision_score(y_test, y_pred)
-        recall = recall_score(y_test, y_pred)
-        f1 = f1_score(y_test, y_pred)
-        
-        st.write("Model Evaluation Metrics:")
-        col21, col22, col23, col24 = st.columns(4)
-        with col21:
-            st.metric("Accuracy", f"{accuracy:.2f}")
-        with col22:
-            st.metric("Precision", f"{precision:.2f}")
-        with col23:
-            st.metric("Recall", f"{recall:.2f}")
-        with col24:
-            st.metric("F1 Score", f"{f1:.2f}")
-        st.write("Classification Report:")
-        st.code(classification_report(y_test, y_pred))
-            
-    with col2:
-        
-        # Compute confusion matrix
-        cm = confusion_matrix(y_test, y_pred)
-        group_names = ["True Neg (TN)", "False Pos (FP)", 
-                       "False Neg (FN)", "True Pos (TP)"]
-        
-        group_counts = [f"{value}" for value in cm.flatten()]
-        labels = [f"{name}\n{count}" for name, count in zip(group_names, group_counts)]
-        
-        labels = np.array(labels).reshape(2, 2)
-
-        # Plot heatmap
-        fig = plt.figure(figsize=(6, 5))
-        sns.heatmap(cm, annot=labels, fmt="", cmap="Blues", cbar=False)
-        plt.xlabel("Predicted Label")
-        plt.ylabel("True Label")
-        plt.title("Confusion Matrix with TP / FP / FN / TN")
-        st.pyplot(fig)
+    
 
     st.subheader("Close Price Chart")
     fig = plt.figure(figsize=(20, 6))
@@ -241,5 +202,47 @@ if uploaded_file is not None:
         fig = plot_plotly(forecast_model, forecast)
         fig.update_layout(template='plotly_dark')
         st.plotly_chart(fig)
+
+col1, col2 = st.columns(2)
+    with col1:
+        # Accuracy, Precision, Recall, F1
+        accuracy = accuracy_score(y_test, y_pred)
+        precision = precision_score(y_test, y_pred)
+        recall = recall_score(y_test, y_pred)
+        f1 = f1_score(y_test, y_pred)
+        
+        st.write("Model Evaluation Metrics:")
+        col21, col22, col23, col24 = st.columns(4)
+        with col21:
+            st.metric("Accuracy", f"{accuracy:.2f}")
+        with col22:
+            st.metric("Precision", f"{precision:.2f}")
+        with col23:
+            st.metric("Recall", f"{recall:.2f}")
+        with col24:
+            st.metric("F1 Score", f"{f1:.2f}")
+        st.write("Classification Report:")
+        st.code(classification_report(y_test, y_pred))
+            
+    with col2:
+        
+        # Compute confusion matrix
+        cm = confusion_matrix(y_test, y_pred)
+        group_names = ["True Neg (TN)", "False Pos (FP)", 
+                       "False Neg (FN)", "True Pos (TP)"]
+        
+        group_counts = [f"{value}" for value in cm.flatten()]
+        labels = [f"{name}\n{count}" for name, count in zip(group_names, group_counts)]
+        
+        labels = np.array(labels).reshape(2, 2)
+
+        # Plot heatmap
+        fig = plt.figure(figsize=(6, 5))
+        sns.heatmap(cm, annot=labels, fmt="", cmap="Blues", cbar=False)
+        plt.xlabel("Predicted Label")
+        plt.ylabel("True Label")
+        plt.title("Confusion Matrix with TP / FP / FN / TN")
+        st.pyplot(fig)
+
 
 
