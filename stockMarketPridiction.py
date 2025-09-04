@@ -74,7 +74,7 @@ uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
 
-     col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2)
     with col1:
         
         st.subheader("Orignal Data Preview")
@@ -243,5 +243,6 @@ if uploaded_file is not None:
        
         
        
+
 
 
