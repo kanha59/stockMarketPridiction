@@ -198,7 +198,7 @@ if uploaded_file is not None:
         plt.legend()
         st.pyplot(fig)
     with col2:  
-        st.subheader("Forecast")
+        st.subheader("Daily Forecast")
         fig = plot_plotly(forecast_model, forecast)
         fig.update_layout(template='plotly_dark')
         st.plotly_chart(fig)
@@ -244,6 +244,7 @@ if uploaded_file is not None:
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
 
 
 
