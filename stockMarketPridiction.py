@@ -129,7 +129,7 @@ if uploaded_file is not None:
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("SMA Chart")
-        fig = plt.figure(figsize=(20, 6))
+        fig = plt.figure(figsize=(15, 6))
         plt.style.use('dark_background')
         plt.plot(df["date"], df["sma_20"], label="SMA 20", color='blue')
         plt.plot(df["date"], df["sma_50"], label="SMA 50", color='red')
@@ -244,5 +244,6 @@ if uploaded_file is not None:
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
 
 
