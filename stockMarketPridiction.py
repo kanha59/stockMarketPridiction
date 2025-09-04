@@ -95,31 +95,50 @@ if uploaded_file is not None:
     # Make forecast
     forecast_model, forecast = make_forecast(df)
 
-    col1, col2 = st.columns(2)
-
+    #col1, col2 = st.columns(2)
     with col1:
         st.subheader("Data Preview")
         st.write(df.head())
-
-        st.subheader("Model Evaluation")
+    with col2:
+        # Accuracy, Precision, Recall, F1
         accuracy = accuracy_score(y_test, y_pred)
         precision = precision_score(y_test, y_pred)
         recall = recall_score(y_test, y_pred)
         f1 = f1_score(y_test, y_pred)
-        col_evaluation = st.columns(4)
-        with col_evaluation[0]:
+        
+        st.write("Model Evaluation Metrics:")
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
             st.metric("Accuracy", f"{accuracy:.2f}")
-        with col_evaluation[1]:
+        with col2:
             st.metric("Precision", f"{precision:.2f}")
-        with col_evaluation[2]:
+        with col3:
             st.metric("Recall", f"{recall:.2f}")
-        with col_evaluation[3]:
+        with col4:
             st.metric("F1 Score", f"{f1:.2f}")
+        
+        st.write("Classification Report:")
+        st.code(classification_report(y_test, y_pred))
+        
+        # Compute confusion matrix
+        cm = confusion_matrix(y_test, y_pred)
+        group_names = ["True Neg (TN)", "False Pos (FP)", 
+                       "False Neg (FN)", "True Pos (TP)"]
+        
+        group_counts = [f"{value}" for value in cm.flatten()]
+        labels = [f"{name}\n{count}" for name, count in zip(group_names, group_counts)]
+        
+        labels = np.array(labels).reshape(2, 2)
 
-        st.subheader("Prediction")
-        st.write(f"Prediction: {prediction}")
+        # Plot heatmap
+        fig = plt.figure(figsize=(6, 5))
+        sns.heatmap(cm, annot=labels, fmt="", cmap="Blues", cbar=False)
+        plt.xlabel("Predicted Label")
+        plt.ylabel("True Label")
+        plt.title("Confusion Matrix with TP / FP / FN / TN")
+        st.pyplot(fig)
 
-    with col2:
+    with col3:
         st.subheader("Close Price Chart")
         fig = plt.figure(figsize=(10, 6))
         plt.style.use('dark_background')
@@ -137,8 +156,8 @@ if uploaded_file is not None:
         st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Technical Indicators")
-    col3, col4 = st.columns(2)
-    with col3:
+    #col3, col4 = st.columns(2)
+    with col4:
         fig = plt.figure(figsize=(10, 6))
         plt.style.use('dark_background')
         plt.plot(df["date"], df["sma_20"], label="SMA 20", color='blue')
@@ -151,7 +170,7 @@ if uploaded_file is not None:
         plt.legend()
         st.pyplot(fig)
 
-    with col4:
+    with col5:
         fig = plt.figure(figsize=(10, 6))
         plt.style.use('dark_background')
         plt.plot(df["date"], df["rsi_14"], label="RSI 14", color='green')
@@ -164,3 +183,4 @@ if uploaded_file is not None:
         plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
+
