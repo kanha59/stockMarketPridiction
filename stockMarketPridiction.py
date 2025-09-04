@@ -143,7 +143,7 @@ if uploaded_file is not None:
         st.pyplot(fig)
     with col2:
         st.subheader("RSI Chart")
-        fig = plt.figure(figsize=(20, 6))
+        fig = plt.figure(figsize=(15, 6))
         plt.style.use('dark_background')
         plt.plot(df["date"], df["rsi_14"], label="RSI 14", color='green')
         plt.axhline(y=30, color='r', linestyle='--')
@@ -159,7 +159,7 @@ if uploaded_file is not None:
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("MACD Chart")
-        fig = plt.figure(figsize=(20, 6))
+        fig = plt.figure(figsize=(15, 6))
         plt.style.use('dark_background')
         plt.plot(df["date"], df["macd"], label="MACD", color='blue')
         plt.plot(df["date"], df["macd_signal"], label="Signal", color='red')
@@ -173,7 +173,7 @@ if uploaded_file is not None:
         st.pyplot(fig)
     with col2:
         st.subheader("Volatility Chart")
-        fig = plt.figure(figsize=(20, 6))
+        fig = plt.figure(figsize=(15, 6))
         plt.style.use('dark_background')
         plt.plot(df["date"], df["volatility_5"], label="Volatility", color='red')
         plt.xlabel("Date", color='white')
@@ -187,7 +187,7 @@ if uploaded_file is not None:
     col1, col2 = st.columns(2)
     with col1:
         st.subheader("Pct Change Chart")
-        fig = plt.figure(figsize=(20, 6))
+        fig = plt.figure(figsize=(15, 6))
         plt.style.use('dark_background')
         plt.plot(df["date"], df["roc_5"], label="Pct Change", color='blue')
         plt.xlabel("Date", color='white')
@@ -244,6 +244,7 @@ if uploaded_file is not None:
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
 
 
 
