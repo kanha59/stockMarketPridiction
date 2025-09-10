@@ -76,13 +76,13 @@ uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
 
-    col1, col2 = st.columns(2)
-    with col1:
+    #col1, col2 = st.columns(2)
+    with st.container(border=True):
         
         st.subheader("Orignal Data Preview")
         st.write(df.head())
 
-    with col2:
+    with st.container(border=True):
         
         df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
         df["date"] = pd.to_datetime(df["date"])
@@ -250,6 +250,7 @@ if uploaded_file is not None:
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
 
 
 
