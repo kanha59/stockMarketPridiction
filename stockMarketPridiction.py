@@ -205,9 +205,9 @@ if uploaded_file is not None:
 
     with st.container(border=True):  
        # prophet_df = df[["date", "close"]].rename(columns={"date": "ds", "close": "y"})
-        #comparisons = forecast.merge(prophet_df, on='ds', how='left')
-        #comparisons.rename(columns={'y': 'actual_close'}, inplace=True)
         comparisons = forecast.merge(prophet_df, on='ds', how='left')
+        comparisons.rename(columns={'y': 'actual_close'}, inplace=True)
+        #comparisons = forecast.merge(prophet_df, on='ds', how='left')
         st.write(comparisons.head())
         comparisons['actual_close'] = comparisons['y']
         st.write(comparisons.head())
@@ -227,6 +227,7 @@ if uploaded_file is not None:
 
         # Filter data for display
         historical_comparisons = comparisons.copy()
+        st.write(historical_comparisons.head())
         end_date = historical_comparisons['ds'].max()
         start_date = end_date - delta
 
@@ -315,6 +316,7 @@ if uploaded_file is not None:
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
         
+
 
 
 
