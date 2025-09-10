@@ -234,7 +234,7 @@ if uploaded_file is not None:
             display_df[['ds', 'actual_close', 'yhat']].rename(columns={'yhat': 'prediction_close'})
         )
         # st.dataframe(display_df[['ds', 'actual_close', 'yhat']])
-
+        st.write(comparisons.head())
         comparison = comparisons.copy()
         comparison = comparison.dropna().reset_index(drop=True)
 
@@ -312,4 +312,5 @@ if uploaded_file is not None:
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
         
+
 
