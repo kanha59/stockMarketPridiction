@@ -204,15 +204,9 @@ if uploaded_file is not None:
         st.pyplot(fig)
 
     with st.container(border=True):  
-       # prophet_df = df[["date", "close"]].rename(columns={"date": "ds", "close": "y"})
-        #comparisons = forecast.merge(prophet_df, on='ds', how='left')
-        #comparisons.rename(columns={'y': 'actual_close'}, inplace=True)
-        #comparisons = forecast.merge(prophet_df, on='ds', how='left')
-        prophet_df = df[["date", "close"]].rename(columns={"date": "ds", "close": "actual_close"})
-        forecast_model, forecast, _ = make_forecast(df)
-        comparisons = forecast.merge(prophet_df, on='ds', how='inner')
-       
-        comparisons['actual_close'] = comparisons['y']
+        prophet_df = df[["date", "close"]].rename(columns={"date": "ds", "close": "y"})
+        comparisons = forecast.merge(prophet_df, on='ds', how='left')
+        comparisons.rename(columns={'y': 'actual_close'}, inplace=True)
 
         st.write("Forecast vs Actuals (historical data):")
 
@@ -230,7 +224,6 @@ if uploaded_file is not None:
 
         # Filter data for display
         historical_comparisons = comparisons.copy()
-        
         end_date = historical_comparisons['ds'].max()
         start_date = end_date - delta
 
@@ -241,7 +234,7 @@ if uploaded_file is not None:
             display_df[['ds', 'actual_close', 'yhat']].rename(columns={'yhat': 'prediction_close'})
         )
         # st.dataframe(display_df[['ds', 'actual_close', 'yhat']])
-        
+
         comparison = comparisons.copy()
         comparison = comparison.dropna().reset_index(drop=True)
 
@@ -252,11 +245,11 @@ if uploaded_file is not None:
         # Calculate RMSE and MAE
         from sklearn.metrics import mean_squared_error, mean_absolute_error
         import numpy as np
-        
+
         mse = mean_squared_error(y_true, y_pred)
         rmse = np.sqrt(mse)
         mae = mean_absolute_error(y_true, y_pred)
-        
+
         # Calculate percentage errors
         rmse_pct = (rmse / y_true.mean()) * 100
         mae_pct = (mae / y_true.mean()) * 100
@@ -319,6 +312,7 @@ if uploaded_file is not None:
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
         
+
 
 
 
