@@ -74,13 +74,13 @@ uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
 
-    col1, col2 = st.columns(2)
-    with col1:
+   
+    with st.container(border=True):
         
         st.subheader("Orignal Data Preview")
         st.write(df.head())
 
-    with col2:
+    with st.container(border=True):
         
         df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
         df["date"] = pd.to_datetime(df["date"])
@@ -126,8 +126,8 @@ if uploaded_file is not None:
 
     # Display technical indicator charts
     st.subheader("Technical Indicators")
-    col1, col2 = st.columns(2)
-    with col1:
+   
+    with st.container(border=True):
         st.subheader("SMA Chart")
         fig = plt.figure(figsize=(15, 6))
         plt.style.use('dark_background')
@@ -141,7 +141,7 @@ if uploaded_file is not None:
         plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
-    with col2:
+    with st.container(border=True):
         st.subheader("RSI Chart")
         fig = plt.figure(figsize=(15, 6))
         plt.style.use('dark_background')
@@ -156,8 +156,8 @@ if uploaded_file is not None:
         plt.legend()
         st.pyplot(fig)
 
-    col1, col2 = st.columns(2)
-    with col1:
+   
+    with st.container(border=True):
         st.subheader("MACD Chart")
         fig = plt.figure(figsize=(15, 6))
         plt.style.use('dark_background')
@@ -171,7 +171,7 @@ if uploaded_file is not None:
         plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
-    with col2:
+    with st.container(border=True):
         st.subheader("Volatility Chart")
         fig = plt.figure(figsize=(15, 6))
         plt.style.use('dark_background')
@@ -184,8 +184,8 @@ if uploaded_file is not None:
         plt.legend()
         st.pyplot(fig)
 
-    col1, col2 = st.columns(2)
-    with col1:
+   
+    with st.container(border=True):
         st.subheader("Pct Change Chart")
         fig = plt.figure(figsize=(15, 6))
         plt.style.use('dark_background')
@@ -197,15 +197,15 @@ if uploaded_file is not None:
         plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
-    with col2:  
+    with st.container(border=True):  
         st.subheader("Daily Forecast")
         fig = plot_plotly(forecast_model, forecast)
         fig.update_layout(template='plotly_dark')
         st.plotly_chart(fig)
         
 
-    col1, col2 = st.columns(2)
-    with col1:
+   
+    with st.container(border=True):
         # Accuracy, Precision, Recall, F1
         accuracy = accuracy_score(y_test, y_pred)
         precision = precision_score(y_test, y_pred)
@@ -225,7 +225,7 @@ if uploaded_file is not None:
         st.write("Classification Report:")
         st.code(classification_report(y_test, y_pred))
             
-    with col2:
+    with st.container(border=True):
         
         # Compute confusion matrix
         cm = confusion_matrix(y_test, y_pred)
@@ -244,3 +244,4 @@ if uploaded_file is not None:
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
