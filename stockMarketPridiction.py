@@ -66,7 +66,7 @@ def make_forecast(df):
     model.fit(prophet_df)
     future = model.make_future_dataframe(periods=30)
     forecast = model.predict(future)
-    return model, forecast
+    return model, forecast, prophet_df
 
 # Streamlit app
 st.title("Stock Price Analysis and Prediction")
@@ -110,7 +110,7 @@ if uploaded_file is not None:
     
 
     # Make forecast
-    forecast_model, forecast = make_forecast(df)
+    forecast_model, forecast, prophet_df = make_forecast(df)
 
     
       # Model prediction
@@ -204,7 +204,7 @@ if uploaded_file is not None:
         st.pyplot(fig)
 
     with st.container(border=True):  
-        prophet_df = df[["date", "close"]].rename(columns={"date": "ds", "close": "y"})
+       # prophet_df = df[["date", "close"]].rename(columns={"date": "ds", "close": "y"})
         comparisons = forecast.merge(prophet_df, on='ds', how='left')
         comparisons.rename(columns={'y': 'actual_close'}, inplace=True)
 
@@ -312,5 +312,6 @@ if uploaded_file is not None:
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
         
+
 
 
