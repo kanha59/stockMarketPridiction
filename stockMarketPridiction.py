@@ -66,7 +66,7 @@ def make_forecast(df):
     model.fit(prophet_df)
     future = model.make_future_dataframe(periods=30)
     forecast = model.predict(future)
-    return model, forecast
+    return model, forecast, prophet_df
 
 # Streamlit app
 st.title("Stock Price Analysis and Prediction")
@@ -110,7 +110,7 @@ if uploaded_file is not None:
     trend, confidence = make_prediction(model, df)
 
     # Make forecast
-    forecast_model, forecast = make_forecast(df)
+    forecast_model, forecast, prophet_df = make_forecast(df)
 
     st.subheader("Next Day Trend Prediction")
     with st.container(border=True):
@@ -259,6 +259,7 @@ if uploaded_file is not None:
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
 
 
 
