@@ -201,11 +201,7 @@ if uploaded_file is not None:
         plt.legend()
         st.pyplot(fig)
         
-    with st.container(border=True):  
-        st.subheader("Daily Forecast")
-        fig = plot_plotly(forecast_model, forecast)
-        fig.update_layout(template='plotly_dark')
-        st.plotly_chart(fig)
+    
 
     
     with st.container(border=True):
@@ -249,6 +245,12 @@ if uploaded_file is not None:
         st.pyplot(fig)
 
     with st.container(border=True):  
+        st.subheader("Daily Forecast")
+        fig = plot_plotly(forecast_model, forecast)
+        fig.update_layout(template='plotly_dark')
+        st.plotly_chart(fig)
+
+    with st.container(border=True):  
         prophet_df = df[["date", "close"]].rename(columns={"date": "ds", "close": "y"})
         comparisons = forecast.merge(prophet_df, on='ds', how='left')
         comparisons.rename(columns={'y': 'actual_close'}, inplace=True)
@@ -283,5 +285,6 @@ if uploaded_file is not None:
                 <p><strong>MAE% ≈ {mae_pct:.1f}%</strong> → More intuitive: predictions are ~{mae_pct:.1f}% off on average.</p>
             </div>
             """, unsafe_allow_html=True)
+
 
 
