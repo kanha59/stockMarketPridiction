@@ -55,7 +55,9 @@ def make_prediction(model, df):
     features = ["open", "high", "low", "close", "volume", "sma_20", "sma_50", "rsi_14", "macd", "macd_signal", "macd_hist"]
     last_row = df[features].iloc[[-1]]
     pred = model.predict(last_row)[0]
-    return "Up" if pred == 1 else "Down"
+    prob = model.predict_proba(last_row)[0][pred]
+    
+    return "Up" if pred == 1 else "Down", round(prob * 100, 2)
 
 # Function to make forecast
 def make_forecast(df):
@@ -105,13 +107,17 @@ if uploaded_file is not None:
     model, X_test, y_test, y_pred = train_model(df)
 
     # Make prediction
-    prediction = make_prediction(model, df)
+    trend, confidence = make_prediction(model, df)
+    
 
     # Make forecast
     forecast_model, forecast = make_forecast(df)
 
     
-    
+      # Model prediction
+    st.subheader("Next Day Trend Prediction")
+    with st.container(border=True):
+        st.success(f"Prediction: {trend} with {confidence}% confidence")
 
     st.subheader("Close Price Chart")
     fig = plt.figure(figsize=(20, 6))
@@ -244,6 +250,7 @@ if uploaded_file is not None:
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
 
 
 
