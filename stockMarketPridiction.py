@@ -205,12 +205,15 @@ if uploaded_file is not None:
 
     with st.container(border=True):  
        # prophet_df = df[["date", "close"]].rename(columns={"date": "ds", "close": "y"})
-        comparisons = forecast.merge(prophet_df, on='ds', how='left')
-        comparisons.rename(columns={'y': 'actual_close'}, inplace=True)
         #comparisons = forecast.merge(prophet_df, on='ds', how='left')
-        st.write(comparisons.head())
+        #comparisons.rename(columns={'y': 'actual_close'}, inplace=True)
+        #comparisons = forecast.merge(prophet_df, on='ds', how='left')
+        prophet_df = df[["date", "close"]].rename(columns={"date": "ds", "close": "actual_close"})
+        forecast_model, forecast, _ = make_forecast(df)
+        comparisons = forecast.merge(prophet_df, on='ds', how='inner')
+       
         comparisons['actual_close'] = comparisons['y']
-        
+
         st.write("Forecast vs Actuals (historical data):")
 
         # Dynamic period selection
@@ -316,6 +319,7 @@ if uploaded_file is not None:
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
         
+
 
 
 
