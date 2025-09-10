@@ -203,7 +203,7 @@ if uploaded_file is not None:
         plt.legend()
         st.pyplot(fig)
 
-    with st.container(border=True):  
+    with st.container(border=True): 
         prophet_df = df[["date", "close"]].rename(columns={"date": "ds", "close": "y"})
         comparisons = forecast.merge(prophet_df, on='ds', how='left')
         comparisons.rename(columns={'y': 'actual_close'}, inplace=True)
@@ -226,9 +226,7 @@ if uploaded_file is not None:
         historical_comparisons = comparisons.copy()
         end_date = historical_comparisons['ds'].max()
         start_date = end_date - delta
-
-
-
+        
         display_df = historical_comparisons[historical_comparisons['ds'] >= start_date]
         st.dataframe(
             display_df[['ds', 'actual_close', 'yhat']].rename(columns={'yhat': 'prediction_close'})
@@ -254,8 +252,8 @@ if uploaded_file is not None:
         rmse_pct = (rmse / y_true.mean()) * 100
         mae_pct = (mae / y_true.mean()) * 100
 
-     with st.container(border=True):
-            st.info(f"""
+         with st.container(border=True):
+             st.info(f"""
             **RMSE = {rmse:.2f}** → On average, your predictions are about ₹{rmse:.2f} away from actual prices.
 
             **MAE = {mae:.2f}** → On average, error is ₹{mae:.2f} per prediction.
@@ -312,3 +310,4 @@ if uploaded_file is not None:
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
         
+
