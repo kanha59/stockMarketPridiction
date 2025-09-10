@@ -197,6 +197,68 @@ if uploaded_file is not None:
         plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
+
+    with st.container(border=True):  
+        prophet_df = df[["date", "close"]].rename(columns={"date": "ds", "close": "y"})
+        comparisons = forecast.merge(prophet_df, on='ds', how='left')
+        comparisons.rename(columns={'y': 'actual_close'}, inplace=True)
+
+        st.write("Forecast vs Actuals (historical data):")
+
+        # Dynamic period selection
+        period_unit = st.radio("Select period unit", ('Days', 'Weeks', 'Months'), horizontal=True)
+        if period_unit == 'Days':
+            period_value = st.number_input("Enter number of days", min_value=1, value=5)
+            delta = pd.Timedelta(days=period_value)
+        elif period_unit == 'Weeks':
+            period_value = st.number_input("Enter number of weeks", min_value=1, value=2)
+            delta = pd.Timedelta(weeks=period_value)
+        else:  # Months
+            period_value = st.number_input("Enter number of months", min_value=1, value=1)
+            delta = pd.DateOffset(months=period_value)
+
+        # Filter data for display
+        historical_comparisons = comparisons.copy()
+        end_date = historical_comparisons['ds'].max()
+        start_date = end_date - delta
+
+
+
+        display_df = historical_comparisons[historical_comparisons['ds'] >= start_date]
+        st.dataframe(
+            display_df[['ds', 'actual_close', 'yhat']].rename(columns={'yhat': 'prediction_close'})
+        )
+        # st.dataframe(display_df[['ds', 'actual_close', 'yhat']])
+
+        comparison = comparisons.copy()
+        comparison = comparison.dropna().reset_index(drop=True)
+
+        # Actual and predicted values
+        y_true = comparison['actual_close']
+        y_pred = comparison['yhat']
+
+        # Calculate RMSE and MAE
+        from sklearn.metrics import mean_squared_error, mean_absolute_error
+        import numpy as np
+
+        mse = mean_squared_error(y_true, y_pred)
+        rmse = np.sqrt(mse)
+        mae = mean_absolute_error(y_true, y_pred)
+
+        # Calculate percentage errors
+        rmse_pct = (rmse / y_true.mean()) * 100
+        mae_pct = (mae / y_true.mean()) * 100
+        
+        with st.container(border=True):
+            st.markdown(f"""
+            <div style="padding: 10px;">
+                <h4>Model Evaluation Metrics</h4>
+                <p><strong>RMSE = {rmse:.2f}</strong> → On average, your predictions are about ₹{rmse:.2f} away from actual prices.</p>
+                <p><strong>MAE = {mae:.2f}</strong> → On average, error is ₹{mae:.2f} per prediction.</p>
+                <p><strong>RMSE% ≈ {rmse_pct:.1f}%</strong> → Model’s average prediction error is ~{rmse_pct:.1f}% of stock price.</p>
+                <p><strong>MAE% ≈ {mae_pct:.1f}%</strong> → More intuitive: predictions are ~{mae_pct:.1f}% off on average.</p>
+            </div>
+            """, unsafe_allow_html=True)
     with st.container(border=True):  
         st.subheader("Daily Forecast")
         fig = plot_plotly(forecast_model, forecast)
@@ -238,10 +300,11 @@ if uploaded_file is not None:
         labels = np.array(labels).reshape(2, 2)
 
         # Plot heatmap
-        fig = plt.figure(figsize=(8, 5))
+        fig = plt.figure(figsize=(15, 6))
         sns.heatmap(cm, annot=labels, fmt="", cmap="Blues", cbar=False)
         plt.xlabel("Predicted Label")
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
 
