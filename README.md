@@ -3,7 +3,7 @@
 # 📈 AI Stock Market Prediction
 
 This project leverages **Machine Learning** and **Time-Series Forecasting** to analyze and predict **Indian stock market prices**.  
-It uses **2 years of stock data (Tata Motors, NSE India)** and builds both **predictive models** and **visual insights** to help traders and analysts.
+It uses **2 years of stock data (State Bank Of India (SBIN), NSE India)** and builds both **predictive models** and **visual insights** to help traders and analysts.
 
 ---
 
@@ -401,5 +401,6 @@ Together, they offer a **comprehensive toolkit** for understanding **market mome
 
 ### 1️⃣ Clone Repo
 ```bash
-git clone https://github.com/yourusername/AI_stock_market.git
-cd AI_stock_market
+1. Clone the repository: `git clone https://github.com/your-username/stock-price-analysis.git`
+2. Install the requirements: `pip install -r requirements.txt`
+3. Run the application: `streamlit run app.py`
