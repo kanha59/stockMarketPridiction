@@ -245,25 +245,25 @@ if uploaded_file is not None:
         # Calculate RMSE and MAE
         from sklearn.metrics import mean_squared_error, mean_absolute_error
         import numpy as np
-
+        
         mse = mean_squared_error(y_true, y_pred)
         rmse = np.sqrt(mse)
         mae = mean_absolute_error(y_true, y_pred)
-
+        
         # Calculate percentage errors
         rmse_pct = (rmse / y_true.mean()) * 100
         mae_pct = (mae / y_true.mean()) * 100
-
-     with st.container(border=True):
-            st.info(f"""
-            **RMSE = {rmse:.2f}** → On average, your predictions are about ₹{rmse:.2f} away from actual prices.
-
-            **MAE = {mae:.2f}** → On average, error is ₹{mae:.2f} per prediction.
-
-            **RMSE% ≈ {rmse_pct:.1f}%** → Model’s average prediction error is ~{rmse_pct:.1f}% of stock price.
-
-            **MAE% ≈ {mae_pct:.1f}%** → More intuitive: predictions are ~{mae_pct:.1f}% off on average.
-            """)
+        
+        with st.container(border=True):
+            st.markdown(f"""
+            <div style="padding: 10px;">
+                <h4>Model Evaluation Metrics</h4>
+                <p><strong>RMSE = {rmse:.2f}</strong> → On average, your predictions are about ₹{rmse:.2f} away from actual prices.</p>
+                <p><strong>MAE = {mae:.2f}</strong> → On average, error is ₹{mae:.2f} per prediction.</p>
+                <p><strong>RMSE% ≈ {rmse_pct:.1f}%</strong> → Model’s average prediction error is ~{rmse_pct:.1f}% of stock price.</p>
+                <p><strong>MAE% ≈ {mae_pct:.1f}%</strong> → More intuitive: predictions are ~{mae_pct:.1f}% off on average.</p>
+            </div>
+            """, unsafe_allow_html=True)
         
     with st.container(border=True):  
         st.subheader("Daily Forecast")
@@ -312,3 +312,4 @@ if uploaded_file is not None:
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
         
+
