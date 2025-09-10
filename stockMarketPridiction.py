@@ -55,9 +55,7 @@ def make_prediction(model, df):
     features = ["open", "high", "low", "close", "volume", "sma_20", "sma_50", "rsi_14", "macd", "macd_signal", "macd_hist"]
     last_row = df[features].iloc[[-1]]
     pred = model.predict(last_row)[0]
-    prob = model.predict_proba(last_row)[0][pred]
-    
-    return "Up" if pred == 1 else "Down", round(prob * 100, 2)
+    return "Up" if pred == 1 else "Down"
 
 # Function to make forecast
 def make_forecast(df):
@@ -75,13 +73,14 @@ st.title("Stock Price Analysis and Prediction")
 uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
-    
-    with st.container(border=True):
+
+    col1, col2 = st.columns(2)
+    with col1:
         
         st.subheader("Orignal Data Preview")
         st.write(df.head())
 
-    with st.container(border=True):
+    with col2:
         
         df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
         df["date"] = pd.to_datetime(df["date"])
@@ -92,7 +91,7 @@ if uploaded_file is not None:
             if col in df.columns:
                 df[col] = df[col].astype(str).str.replace(",", "").astype(float)
         
-        #df = df.sort_values("date").reset_index(drop=True)
+        df = df.sort_values("date").reset_index(drop=True)
         
         st.subheader("Data Preview After Cleaning")
         st.write(df.head())
@@ -106,33 +105,29 @@ if uploaded_file is not None:
     model, X_test, y_test, y_pred = train_model(df)
 
     # Make prediction
-    trend, confidence = make_prediction(model, df)
-    
+    prediction = make_prediction(model, df)
 
     # Make forecast
     forecast_model, forecast = make_forecast(df)
 
     
-      # Model prediction
-    st.subheader("Next Day Trend Prediction")
-    with st.container(border=True):
-        st.success(f"Prediction: {trend} with {confidence}% confidence")
-    with st.container(border=True):
-        st.subheader("Close Price Chart")
-        fig = plt.figure(figsize=(20, 6))
-        plt.style.use('dark_background')
-        plt.plot(df["date"], df["close"], color='yellow')
-        plt.xlabel("Date", color='white')
-        plt.ylabel("Close Price", color='white')
-        plt.title("Close Price Chart", color='white')
-        plt.tick_params(axis='x', colors='white')
-        plt.tick_params(axis='y', colors='white')
-        st.pyplot(fig)
+    
+
+    st.subheader("Close Price Chart")
+    fig = plt.figure(figsize=(20, 6))
+    plt.style.use('dark_background')
+    plt.plot(df["date"], df["close"], color='yellow')
+    plt.xlabel("Date", color='white')
+    plt.ylabel("Close Price", color='white')
+    plt.title("Close Price Chart", color='white')
+    plt.tick_params(axis='x', colors='white')
+    plt.tick_params(axis='y', colors='white')
+    st.pyplot(fig)
 
     # Display technical indicator charts
     st.subheader("Technical Indicators")
-   
-    with st.container(border=True):
+    col1, col2 = st.columns(2)
+    with col1:
         st.subheader("SMA Chart")
         fig = plt.figure(figsize=(15, 6))
         plt.style.use('dark_background')
@@ -146,8 +141,7 @@ if uploaded_file is not None:
         plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
-        
-    with st.container(border=True):
+    with col2:
         st.subheader("RSI Chart")
         fig = plt.figure(figsize=(15, 6))
         plt.style.use('dark_background')
@@ -161,8 +155,9 @@ if uploaded_file is not None:
         plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
-    
-    with st.container(border=True):
+
+    col1, col2 = st.columns(2)
+    with col1:
         st.subheader("MACD Chart")
         fig = plt.figure(figsize=(15, 6))
         plt.style.use('dark_background')
@@ -176,8 +171,7 @@ if uploaded_file is not None:
         plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
-        
-    with st.container(border=True):
+    with col2:
         st.subheader("Volatility Chart")
         fig = plt.figure(figsize=(15, 6))
         plt.style.use('dark_background')
@@ -190,7 +184,8 @@ if uploaded_file is not None:
         plt.legend()
         st.pyplot(fig)
 
-    with st.container(border=True):
+    col1, col2 = st.columns(2)
+    with col1:
         st.subheader("Pct Change Chart")
         fig = plt.figure(figsize=(15, 6))
         plt.style.use('dark_background')
@@ -202,76 +197,15 @@ if uploaded_file is not None:
         plt.tick_params(axis='y', colors='white')
         plt.legend()
         st.pyplot(fig)
-
-    with st.container(border=True): 
-        prophet_df = df[["date", "close"]].rename(columns={"date": "ds", "close": "y"})
-        comparisons = forecast.merge(prophet_df, on='ds', how='left')
-        comparisons.rename(columns={'y': 'actual_close'}, inplace=True)
-
-        st.write("Forecast vs Actuals (historical data):")
-
-        # Dynamic period selection
-        period_unit = st.radio("Select period unit", ('Days', 'Weeks', 'Months'), horizontal=True)
-        if period_unit == 'Days':
-            period_value = st.number_input("Enter number of days", min_value=1, value=5)
-            delta = pd.Timedelta(days=period_value)
-        elif period_unit == 'Weeks':
-            period_value = st.number_input("Enter number of weeks", min_value=1, value=2)
-            delta = pd.Timedelta(weeks=period_value)
-        else:  # Months
-            period_value = st.number_input("Enter number of months", min_value=1, value=1)
-            delta = pd.DateOffset(months=period_value)
-
-        # Filter data for display
-        historical_comparisons = comparisons.copy()
-        end_date = historical_comparisons['ds'].max()
-        start_date = end_date - delta
-        
-        display_df = historical_comparisons[historical_comparisons['ds'] >= start_date]
-        st.dataframe(
-            display_df[['ds', 'actual_close', 'yhat']].rename(columns={'yhat': 'prediction_close'})
-        )
-        # st.dataframe(display_df[['ds', 'actual_close', 'yhat']])
-
-        comparison = comparisons.copy()
-        comparison = comparison.dropna().reset_index(drop=True)
-
-        # Actual and predicted values
-        y_true = comparison['actual_close']
-        y_pred = comparison['yhat']
-
-        # Calculate RMSE and MAE
-        from sklearn.metrics import mean_squared_error, mean_absolute_error
-        import numpy as np
-
-        mse = mean_squared_error(y_true, y_pred)
-        rmse = np.sqrt(mse)
-        mae = mean_absolute_error(y_true, y_pred)
-
-        # Calculate percentage errors
-        rmse_pct = (rmse / y_true.mean()) * 100
-        mae_pct = (mae / y_true.mean()) * 100
-
-        with st.container(border=True):
-            
-            st.info(f"""
-            **RMSE = {rmse:.2f}** → On average, your predictions are about ₹{rmse:.2f} away from actual prices.
-    
-            **MAE = {mae:.2f}** → On average, error is ₹{mae:.2f} per prediction.
-    
-            **RMSE% ≈ {rmse_pct:.1f}%** → Model’s average prediction error is ~{rmse_pct:.1f}% of stock price.
-    
-            **MAE% ≈ {mae_pct:.1f}%** → More intuitive: predictions are ~{mae_pct:.1f}% off on average.
-            """)
-        
-    with st.container(border=True):  
+    with col2:  
         st.subheader("Daily Forecast")
         fig = plot_plotly(forecast_model, forecast)
         fig.update_layout(template='plotly_dark')
         st.plotly_chart(fig)
         
 
-    with st.container(border=True):
+    col1, col2 = st.columns(2)
+    with col1:
         # Accuracy, Precision, Recall, F1
         accuracy = accuracy_score(y_test, y_pred)
         precision = precision_score(y_test, y_pred)
@@ -291,7 +225,7 @@ if uploaded_file is not None:
         st.write("Classification Report:")
         st.code(classification_report(y_test, y_pred))
             
-    with st.container(border=True):
+    with col2:
         
         # Compute confusion matrix
         cm = confusion_matrix(y_test, y_pred)
@@ -304,12 +238,9 @@ if uploaded_file is not None:
         labels = np.array(labels).reshape(2, 2)
 
         # Plot heatmap
-        fig = plt.figure(figsize=(15, 6))
+        fig = plt.figure(figsize=(8, 5))
         sns.heatmap(cm, annot=labels, fmt="", cmap="Blues", cbar=False)
         plt.xlabel("Predicted Label")
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
-        
-
-
