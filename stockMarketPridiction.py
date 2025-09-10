@@ -76,28 +76,13 @@ uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
     
-    with st.container(border=True):
-        
-        st.subheader("Orignal Data Preview")
-        st.write(df.head())
-
-    with st.container(border=True):
-        
-        df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
-        df["date"] = pd.to_datetime(df["date"])
-    
-        # Remove commas from numeric columns
-        numeric_cols = ["open", "high", "low", "close", "volume", "value", "no_of_trades"]
-        for col in numeric_cols:
-            if col in df.columns:
-                df[col] = df[col].astype(str).str.replace(",", "").astype(float)
-        
-        #df = df.sort_values("date").reset_index(drop=True)
-        
-        st.subheader("Data Preview After Cleaning")
-        st.write(df.head())
-
-    
+    # Data cleaning and preprocessing
+    df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_")
+    df["date"] = pd.to_datetime(df["date"])
+    numeric_cols = ["open", "high", "low", "close", "volume", "value", "no_of_trades"]
+    for col in numeric_cols:
+        if col in df.columns:
+            df[col] = df[col].astype(str).str.replace(",", "").astype(float)
 
     # Calculate technical indicators
     df = calculate_indicators(df)
@@ -112,173 +97,46 @@ if uploaded_file is not None:
     # Make forecast
     forecast_model, forecast, prophet_df = make_forecast(df)
 
-    
-      # Model prediction
+    # Display results
     st.subheader("Next Day Trend Prediction")
     with st.container(border=True):
         st.success(f"Prediction: {trend} with {confidence}% confidence")
+
+    # Display forecast
+    st.subheader("Daily Forecast")
     with st.container(border=True):
-        st.subheader("Close Price Chart")
-        fig = plt.figure(figsize=(20, 6))
-        plt.style.use('dark_background')
-        plt.plot(df["date"], df["close"], color='yellow')
-        plt.xlabel("Date", color='white')
-        plt.ylabel("Close Price", color='white')
-        plt.title("Close Price Chart", color='white')
-        plt.tick_params(axis='x', colors='white')
-        plt.tick_params(axis='y', colors='white')
-        st.pyplot(fig)
-
-    # Display technical indicator charts
-    st.subheader("Technical Indicators")
-   
-    with st.container(border=True):
-        st.subheader("SMA Chart")
-        fig = plt.figure(figsize=(15, 6))
-        plt.style.use('dark_background')
-        plt.plot(df["date"], df["sma_20"], label="SMA 20", color='blue')
-        plt.plot(df["date"], df["sma_50"], label="SMA 50", color='red')
-        plt.plot(df["date"], df["close"], label="Close Price", color='yellow')
-        plt.xlabel("Date", color='white')
-        plt.ylabel("SMA", color='white')
-        plt.title("SMA Chart", color='white')
-        plt.tick_params(axis='x', colors='white')
-        plt.tick_params(axis='y', colors='white')
-        plt.legend()
-        st.pyplot(fig)
-        
-    with st.container(border=True):
-        st.subheader("RSI Chart")
-        fig = plt.figure(figsize=(15, 6))
-        plt.style.use('dark_background')
-        plt.plot(df["date"], df["rsi_14"], label="RSI 14", color='green')
-        plt.axhline(y=30, color='r', linestyle='--')
-        plt.axhline(y=70, color='g', linestyle='--')
-        plt.xlabel("Date", color='white')
-        plt.ylabel("RSI", color='white')
-        plt.title("RSI Chart", color='white')
-        plt.tick_params(axis='x', colors='white')
-        plt.tick_params(axis='y', colors='white')
-        plt.legend()
-        st.pyplot(fig)
-    
-    with st.container(border=True):
-        st.subheader("MACD Chart")
-        fig = plt.figure(figsize=(15, 6))
-        plt.style.use('dark_background')
-        plt.plot(df["date"], df["macd"], label="MACD", color='blue')
-        plt.plot(df["date"], df["macd_signal"], label="Signal", color='red')
-        plt.bar(df["date"], df["macd_hist"], label="Histogram", color='green', alpha=0.5)
-        plt.xlabel("Date", color='white')
-        plt.ylabel("MACD", color='white')
-        plt.title("MACD Chart", color='white')
-        plt.tick_params(axis='x', colors='white')
-        plt.tick_params(axis='y', colors='white')
-        plt.legend()
-        st.pyplot(fig)
-        
-    with st.container(border=True):
-        st.subheader("Volatility Chart")
-        fig = plt.figure(figsize=(15, 6))
-        plt.style.use('dark_background')
-        plt.plot(df["date"], df["volatility_5"], label="Volatility", color='red')
-        plt.xlabel("Date", color='white')
-        plt.ylabel("Volatility", color='white')
-        plt.title("Volatility Chart", color='white')
-        plt.tick_params(axis='x', colors='white')
-        plt.tick_params(axis='y', colors='white')
-        plt.legend()
-        st.pyplot(fig)
-
-    with st.container(border=True):
-        st.subheader("Pct Change Chart")
-        fig = plt.figure(figsize=(15, 6))
-        plt.style.use('dark_background')
-        plt.plot(df["date"], df["roc_5"], label="Pct Change", color='blue')
-        plt.xlabel("Date", color='white')
-        plt.ylabel("Pct Change", color='white')
-        plt.title("Pct Change Chart", color='white')
-        plt.tick_params(axis='x', colors='white')
-        plt.tick_params(axis='y', colors='white')
-        plt.legend()
-        st.pyplot(fig)
-
-    with st.container(border=True):  
-        prophet_df = df[["date", "close"]].rename(columns={"date": "ds", "close": "y"})
-        comparisons = forecast.merge(prophet_df, on='ds', how='left')
-        comparisons.rename(columns={'y': 'actual_close'}, inplace=True)
-
-        st.write("Forecast vs Actuals (historical data):")
-
-        # Dynamic period selection
-        period_unit = st.radio("Select period unit", ('Days', 'Weeks', 'Months'), horizontal=True)
-        if period_unit == 'Days':
-            period_value = st.number_input("Enter number of days", min_value=1, value=5)
-            delta = pd.Timedelta(days=period_value)
-        elif period_unit == 'Weeks':
-            period_value = st.number_input("Enter number of weeks", min_value=1, value=2)
-            delta = pd.Timedelta(weeks=period_value)
-        else:  # Months
-            period_value = st.number_input("Enter number of months", min_value=1, value=1)
-            delta = pd.DateOffset(months=period_value)
-
-        # Filter data for display
-        historical_comparisons = comparisons.copy()
-        end_date = historical_comparisons['ds'].max()
-        start_date = end_date - delta
-
-
-
-        display_df = historical_comparisons[historical_comparisons['ds'] >= start_date]
-        st.dataframe(
-            display_df[['ds', 'actual_close', 'yhat']].rename(columns={'yhat': 'prediction_close'})
-        )
-        # st.dataframe(display_df[['ds', 'actual_close', 'yhat']])
-
-        comparison = comparisons.copy()
-        comparison = comparison.dropna().reset_index(drop=True)
-
-        # Actual and predicted values
-        y_true = comparison['actual_close']
-        y_pred = comparison['yhat']
-
-        # Calculate RMSE and MAE
-        from sklearn.metrics import mean_squared_error, mean_absolute_error
-        import numpy as np
-
-        mse = mean_squared_error(y_true, y_pred)
-        rmse = np.sqrt(mse)
-        mae = mean_absolute_error(y_true, y_pred)
-
-        # Calculate percentage errors
-        rmse_pct = (rmse / y_true.mean()) * 100
-        mae_pct = (mae / y_true.mean()) * 100
-        
-        with st.container(border=True):
-            st.markdown(f"""
-            <div style="padding: 10px;">
-                <h4>Model Evaluation Metrics</h4>
-                <p><strong>RMSE = {rmse:.2f}</strong> → On average, your predictions are about ₹{rmse:.2f} away from actual prices.</p>
-                <p><strong>MAE = {mae:.2f}</strong> → On average, error is ₹{mae:.2f} per prediction.</p>
-                <p><strong>RMSE% ≈ {rmse_pct:.1f}%</strong> → Model’s average prediction error is ~{rmse_pct:.1f}% of stock price.</p>
-                <p><strong>MAE% ≈ {mae_pct:.1f}%</strong> → More intuitive: predictions are ~{mae_pct:.1f}% off on average.</p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-    with st.container(border=True):  
-        st.subheader("Daily Forecast")
         fig = plot_plotly(forecast_model, forecast)
         fig.update_layout(template='plotly_dark')
         st.plotly_chart(fig)
-        
 
+    # Display evaluation metrics
+    st.subheader("Model Evaluation Metrics")
     with st.container(border=True):
-        # Accuracy, Precision, Recall, F1
+        comparisons = forecast.merge(prophet_df, on='ds', how='inner')
+        y_true = comparisons['y']
+        y_pred = comparisons['yhat']
+        mse = mean_squared_error(y_true, y_pred)
+        rmse = np.sqrt(mse)
+        mae = mean_absolute_error(y_true, y_pred)
+        rmse_pct = (rmse / y_true.mean()) * 100
+        mae_pct = (mae / y_true.mean()) * 100
+        st.markdown(f"""
+        <div style="padding: 10px;">
+            <h4>Model Evaluation Metrics</h4>
+            <p><strong>RMSE = {rmse:.2f}</strong> → On average, your predictions are about ₹{rmse:.2f} away from actual prices.</p>
+            <p><strong>MAE = {mae:.2f}</strong> → On average, error is ₹{mae:.2f} per prediction.</p>
+            <p><strong>RMSE% ≈ {rmse_pct:.1f}%</strong> → Model’s average prediction error is ~{rmse_pct:.1f}% of stock price.</p>
+            <p><strong>MAE% ≈ {mae_pct:.1f}%</strong> → More intuitive: predictions are ~{mae_pct:.1f}% off on average.</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    # Display classification metrics
+    st.subheader("Classification Metrics")
+    with st.container(border=True):
         accuracy = accuracy_score(y_test, y_pred)
         precision = precision_score(y_test, y_pred)
         recall = recall_score(y_test, y_pred)
         f1 = f1_score(y_test, y_pred)
-        
         st.write("Model Evaluation Metrics:")
         col21, col22, col23, col24 = st.columns(4)
         with col21:
@@ -291,35 +149,21 @@ if uploaded_file is not None:
             st.metric("F1 Score", f"{f1:.2f}")
         st.write("Classification Report:")
         st.code(classification_report(y_test, y_pred))
-            
+
+    # Display confusion matrix
+    st.subheader("Confusion Matrix")
     with st.container(border=True):
-        
-        # Compute confusion matrix
         cm = confusion_matrix(y_test, y_pred)
         group_names = ["True Neg (TN)", "False Pos (FP)", 
                        "False Neg (FN)", "True Pos (TP)"]
-        
         group_counts = [f"{value}" for value in cm.flatten()]
         labels = [f"{name}\n{count}" for name, count in zip(group_names, group_counts)]
-        
         labels = np.array(labels).reshape(2, 2)
-
-        # Plot heatmap
         fig = plt.figure(figsize=(15, 6))
         sns.heatmap(cm, annot=labels, fmt="", cmap="Blues", cbar=False)
         plt.xlabel("Predicted Label")
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
-        
-
-
-
-
-
-
-
-
-
 
 
