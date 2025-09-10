@@ -253,6 +253,17 @@ if uploaded_file is not None:
         # Calculate percentage errors
         rmse_pct = (rmse / y_true.mean()) * 100
         mae_pct = (mae / y_true.mean()) * 100
+
+     with st.container(border=True):
+            st.info(f"""
+            **RMSE = {rmse:.2f}** → On average, your predictions are about ₹{rmse:.2f} away from actual prices.
+
+            **MAE = {mae:.2f}** → On average, error is ₹{mae:.2f} per prediction.
+
+            **RMSE% ≈ {rmse_pct:.1f}%** → Model’s average prediction error is ~{rmse_pct:.1f}% of stock price.
+
+            **MAE% ≈ {mae_pct:.1f}%** → More intuitive: predictions are ~{mae_pct:.1f}% off on average.
+            """)
         
     with st.container(border=True):  
         st.subheader("Daily Forecast")
@@ -300,15 +311,4 @@ if uploaded_file is not None:
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
-
-
-
-
-
-
-
-
-
-
-
-
+        
