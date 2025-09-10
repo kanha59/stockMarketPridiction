@@ -233,7 +233,7 @@ if uploaded_file is not None:
         rmse_pct = (rmse / y_true.mean()) * 100
         mae_pct = (mae / y_true.mean()) * 100
         
-       st.markdown(f"""
+        st.markdown(f"""
             <div style="padding: 10px;">
                 <h4>Model Evaluation Metrics</h4>
                 <p><strong>RMSE = {rmse:.2f}</strong> → On average, your predictions are about ₹{rmse:.2f} away from actual prices.</p>
@@ -282,3 +282,4 @@ if uploaded_file is not None:
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
