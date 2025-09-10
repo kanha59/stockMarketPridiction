@@ -205,21 +205,7 @@ if uploaded_file is not None:
         fig = plot_plotly(forecast_model, forecast)
         fig.update_layout(template='plotly_dark')
         st.plotly_chart(fig)
-
-    with st.container(border=True):
-        # Merge forecast and actual values
-        comparisons = forecast.merge(prophet_df, on='ds', how='inner')
         
-        # Calculate RMSE and MAE
-        y_true = comparisons['y']
-        y_pred = comparisons['yhat']
-        mse = mean_squared_error(y_true, y_pred)
-        rmse = np.sqrt(mse)
-        st.write(f"RMSE: {rmse:.2f}")
-        st.write(f"MSE: {mse:.2f}")
-        
-
-   
     with st.container(border=True):
         # Accuracy, Precision, Recall, F1
         accuracy = accuracy_score(y_test, y_pred)
@@ -259,6 +245,7 @@ if uploaded_file is not None:
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
 
 
 
