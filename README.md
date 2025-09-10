@@ -1,6 +1,4 @@
-# AI_For_Market_Trend_Analysis
-
-# 📈 AI Stock Market Prediction
+# 📈 Stock Market Pridiction
 
 This project leverages **Machine Learning** and **Time-Series Forecasting** to analyze and predict **Indian stock market prices**.  
 It uses **2 years of stock data (State Bank Of India (SBIN), NSE India)** and builds both **predictive models** and **visual insights** to help traders and analysts.
