@@ -55,7 +55,9 @@ def make_prediction(model, df):
     features = ["open", "high", "low", "close", "volume", "sma_20", "sma_50", "rsi_14", "macd", "macd_signal", "macd_hist"]
     last_row = df[features].iloc[[-1]]
     pred = model.predict(last_row)[0]
-    return "Up" if pred == 1 else "Down"
+    prob = model.predict_proba(last_row)[0][pred]
+    
+    return "Up" if pred == 1 else "Down", round(prob * 100, 2)
 
 # Function to make forecast
 def make_forecast(df):
@@ -104,14 +106,15 @@ if uploaded_file is not None:
     # Train model
     model, X_test, y_test, y_pred = train_model(df)
 
-    # Make prediction
-    prediction = make_prediction(model, df)
+   # Make prediction
+    trend, confidence = make_prediction(model, df)
 
     # Make forecast
     forecast_model, forecast = make_forecast(df)
 
-    
-    
+    st.subheader("Next Day Trend Prediction")
+    with st.container(border=True):
+        st.success(f"Prediction: {trend} with {confidence}% confidence")
 
     st.subheader("Close Price Chart")
     fig = plt.figure(figsize=(20, 6))
@@ -202,6 +205,18 @@ if uploaded_file is not None:
         fig = plot_plotly(forecast_model, forecast)
         fig.update_layout(template='plotly_dark')
         st.plotly_chart(fig)
+
+    with st.container(border=True):
+        # Merge forecast and actual values
+        comparisons = forecast.merge(prophet_df, on='ds', how='inner')
+        
+        # Calculate RMSE and MAE
+        y_true = comparisons['y']
+        y_pred = comparisons['yhat']
+        mse = mean_squared_error(y_true, y_pred)
+        rmse = np.sqrt(mse)
+        st.write(f"RMSE: {rmse:.2f}")
+        st.write(f"MSE: {mse:.2f}")
         
 
    
@@ -244,5 +259,6 @@ if uploaded_file is not None:
         plt.ylabel("True Label")
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
+
 
 
