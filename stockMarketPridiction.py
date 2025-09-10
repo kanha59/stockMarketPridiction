@@ -210,7 +210,7 @@ if uploaded_file is not None:
         comparisons = forecast.merge(prophet_df, on='ds', how='left')
         st.write(comparisons.head())
         comparisons['actual_close'] = comparisons['y']
-        
+        st.write(comparisons.head())
         st.write("Forecast vs Actuals (historical data):")
 
         # Dynamic period selection
@@ -315,6 +315,7 @@ if uploaded_file is not None:
         plt.title("Confusion Matrix with TP / FP / FN / TN")
         st.pyplot(fig)
         
+
 
 
 
